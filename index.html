@@ -1,853 +1,843 @@
 <!DOCTYPE html>
-<html lang="th">
+<html lang="th" class="h-full bg-amber-50">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Cat Theme Payment One-Page 🐾</title>
-    <!-- Tailwind CSS -->
-    <script src="https://cdn.tailwindcss.com"></script>
-    <!-- Google Fonts: Fredoka & Mitr -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght=300..700&family=Mitr:wght=300;400;500;600&display=swap" rel="stylesheet">
-    <!-- Font Awesome Icons -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    
-    <script>
-        tailwind.config = {
-            theme: {
-                extend: {
-                    colors: {
-                        catWarm: '#FAF6F0',      /* ครีมอมเหลืองอบอุ่น */
-                        catOrange: '#E17E2B',    /* ส้มแมวส้ม */
-                        catOrangeLight: '#F5C284', /* พีชส้มพาสเทล */
-                        catBrown: '#5A3E2D',     /* น้ำตาลเข้ม */
-                        catTeal: '#519890',      /* เขียวมิ้นต์ตัดส้ม */
-                        catYellow: '#FCD872',    /* เหลืองเนย */
-                    },
-                    fontFamily: {
-                        sans: ['Mitr', 'Fredoka', 'sans-serif'],
-                    }
-                }
-            }
-        }
-    </script>
-    <style>
-        body {
-            font-family: 'Mitr', 'Fredoka', sans-serif;
-            background-color: #FAF6F0;
-            color: #5A3E2D;
-            overflow-x: hidden;
-        }
-        /* Custom scrollbar */
-        ::-webkit-scrollbar {
-            width: 8px;
-        }
-        ::-webkit-scrollbar-track {
-            background: #FAF6F0;
-        }
-        ::-webkit-scrollbar-thumb {
-            background: #E17E2B;
-            border-radius: 999px;
-        }
-        /* Cute Tail wagging animation */
-        @keyframes tailWag {
-            0%, 100% { transform: rotate(0deg); }
-            50% { transform: rotate(15deg); }
-        }
-        .cat-tail {
-            transform-origin: bottom center;
-            animation: tailWag 1.5s ease-in-out infinite;
-        }
-        /* Sparkle blinking animation */
-        @keyframes sparkle {
-            0%, 100% { opacity: 0.3; transform: scale(0.8); }
-            50% { opacity: 1; transform: scale(1.2); }
-        }
-        .sparkle-slow {
-            animation: sparkle 3s infinite ease-in-out;
-        }
-    </style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ระบบชำระเงินร้านค้าน้องแมว</title>
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Lucide Icons -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <!-- Google Fonts (Mitr & Prompt) -->
+  <link href="https://fonts.googleapis.com/css2?family=Mitr:wght@300;400;500&family=Prompt:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <style>
+    body {
+      font-family: 'Prompt', sans-serif;
+    }
+    .font-title {
+      font-family: 'Mitr', sans-serif;
+    }
+    /* ซ่อน scrollbar แต่ยังเลื่อนได้ */
+    .no-scrollbar::-webkit-scrollbar {
+      display: none;
+    }
+    .no-scrollbar {
+      -ms-overflow-style: none;
+      scrollbar-width: none;
+    }
+    /* เอฟเฟกต์เด้งดึ๋งนุ่มนวล */
+    .bounce-hover:hover {
+      transform: scale(1.03) translateY(-2px);
+    }
+    /* แอนิเมชันของแจ้งเตือนการก๊อปปี้ */
+    @keyframes slideUp {
+      0% { transform: translate(-50%, 100%); opacity: 0; }
+      100% { transform: translate(-50%, -20px); opacity: 1; }
+    }
+    .toast-animate {
+      animation: slideUp 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+    }
+  </style>
 </head>
-<body class="min-h-screen relative flex flex-col justify-between">
+<body class="relative min-h-screen flex flex-col justify-between overflow-x-hidden no-scrollbar bg-gradient-to-b from-amber-50 via-orange-50 to-amber-100">
 
-    <!-- Interactive Background Canvas -->
-    <canvas id="canvasBg" class="absolute top-0 left-0 w-full h-full pointer-events-none z-0"></canvas>
+  <!-- Canvas สำหรับพื้นหลังเคลื่อนไหว (แมว, อุ้งเท้า, ปลาทู) -->
+  <canvas id="bgCanvas" class="fixed top-0 left-0 w-full h-full pointer-events-none z-0"></canvas>
 
-    <!-- Success Copy Toast Alert -->
-    <div id="toast" class="fixed top-5 left-1/2 transform -translate-x-1/2 bg-catTeal text-white px-6 py-3 rounded-full shadow-lg z-50 flex items-center gap-2 transform translate-y-[-100px] opacity-0 transition-all duration-300 ease-out">
-        <span class="text-xl">🐾</span>
-        <span id="toastText">คัดลอกเลขบัญชีสำเร็จแล้ว เหมียว!</span>
+  <!-- เนื้อหาหลัก -->
+  <main class="relative z-10 flex-1 flex flex-col items-center justify-center p-4 sm:p-6 mt-6">
+    
+    <!-- น้องแมวโผล่หัวส้มด้านบนบัตร -->
+    <div class="relative w-full max-w-md flex justify-center -mb-4 z-20">
+      <svg class="w-24 h-24 drop-shadow-md" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M20 80 C20 40, 80 40, 80 80 Z" fill="#E2722B"/> <!-- หัวส้มเข้ม -->
+        <path d="M25 80 C25 45, 75 45, 75 80 Z" fill="#F4A261"/> <!-- หัวส้มสว่าง -->
+        <path d="M20 45 L35 15 L45 38 Z" fill="#E2722B"/> <!-- หูซ้ายนอก -->
+        <path d="M24 43 L33 21 L40 37 Z" fill="#E9C46A"/> <!-- หูซ้ายใน -->
+        <path d="M80 45 L65 15 L55 38 Z" fill="#E2722B"/> <!-- หูขวานอก -->
+        <path d="M76 43 L67 21 L60 37 Z" fill="#E9C46A"/> <!-- หูขวาใน -->
+        <circle cx="40" cy="55" r="5" fill="#264653"/> <!-- ตาซ้าย -->
+        <circle cx="60" cy="55" r="5" fill="#264653"/> <!-- ตาขวา -->
+        <path d="M38 52 C38 50, 42 50, 42 52 Z" fill="white"/> <!-- ไฮไลท์ตาซ้าย -->
+        <path d="M58 52 C58 50, 62 50, 62 52 Z" fill="white"/> <!-- ไฮไลท์ตาขวา -->
+        <!-- จมูกและปาก -->
+        <polygon points="48,60 52,60 50,63" fill="#E76F51"/>
+        <path d="M46 64 C48 66, 50 66, 50 64 C50 66, 52 66, 54 64" stroke="#264653" stroke-width="2" stroke-linecap="round" fill="none"/>
+        <!-- แก้มแดด -->
+        <ellipse cx="32" cy="62" rx="4" ry="2" fill="#E76F51" fill-opacity="0.5"/>
+        <ellipse cx="68" cy="62" rx="4" ry="2" fill="#E76F51" fill-opacity="0.5"/>
+        <!-- หนวด -->
+        <line x1="15" y1="58" x2="28" y2="60" stroke="#264653" stroke-width="1.5" stroke-linecap="round"/>
+        <line x1="13" y1="65" x2="27" y2="64" stroke="#264653" stroke-width="1.5" stroke-linecap="round"/>
+        <line x1="85" y1="58" x2="72" y2="60" stroke="#264653" stroke-width="1.5" stroke-linecap="round"/>
+        <line x1="87" y1="65" x2="73" y2="64" stroke="#264653" stroke-width="1.5" stroke-linecap="round"/>
+      </svg>
     </div>
 
-    <!-- MAIN INTERACTIVE CONTAINER -->
-    <div class="relative z-10 w-full max-w-lg mx-auto p-4 flex-grow flex flex-col justify-center">
+    <!-- บัตรหลักการชำระเงิน -->
+    <div class="w-full max-w-md bg-white/95 backdrop-blur-md rounded-3xl shadow-xl border border-orange-100 p-6 flex flex-col items-center relative overflow-hidden">
+      
+      <!-- ตกแต่งขอบการ์ดลายเท้าน้องแมว -->
+      <div class="absolute top-3 left-3 text-amber-200/40"><i data-lucide="paw-print" class="w-6 h-6"></i></div>
+      <div class="absolute top-3 right-3 text-amber-200/40"><i data-lucide="paw-print" class="w-6 h-6 rotate-12"></i></div>
 
-        <!-- Main Card Container -->
-        <div class="relative bg-white border-[6px] border-catOrangeLight rounded-[2.5rem] shadow-[0_16px_0_0_#EEDAC5] p-6 text-center max-w-sm mx-auto w-full transition-all duration-300 mt-20">
-            
-            <!-- Peeking Tabby Cat Topper -->
-            <div class="absolute -top-[76px] left-1/2 transform -translate-x-1/2 w-48 h-20 overflow-visible pointer-events-none">
-                <svg viewBox="0 0 200 100" class="w-full h-full">
-                    <!-- Cat Ears -->
-                    <path d="M 40 100 L 15 30 L 70 65 Z" fill="#E17E2B" stroke="#4A2C0F" stroke-width="4" stroke-linejoin="round"/>
-                    <path d="M 45 95 L 28 45 L 65 70 Z" fill="#FFF" />
-                    <path d="M 160 100 L 185 30 L 130 65 Z" fill="#E17E2B" stroke="#4A2C0F" stroke-width="4" stroke-linejoin="round"/>
-                    <path d="M 155 95 L 172 45 L 135 70 Z" fill="#FFF" />
-                    <!-- Head Background -->
-                    <path d="M 30 100 Q 100 40 170 100 Z" fill="#E17E2B" stroke="#4A2C0F" stroke-width="4" />
-                    <!-- Stripes -->
-                    <path d="M 85 50 Q 100 65 115 50" fill="none" stroke="#B85C0A" stroke-width="4" stroke-linecap="round"/>
-                    <path d="M 90 40 Q 100 55 110 40" fill="none" stroke="#B85C0A" stroke-width="4" stroke-linecap="round"/>
-                    <path d="M 38 75 Q 55 75 60 80" fill="none" stroke="#B85C0A" stroke-width="4" stroke-linecap="round"/>
-                    <path d="M 162 75 Q 145 75 140 80" fill="none" stroke="#B85C0A" stroke-width="4" stroke-linecap="round"/>
-                    <!-- Eyes -->
-                    <g id="catEyes">
-                        <circle cx="70" cy="75" r="7" fill="#4A2C0F"/>
-                        <circle cx="70" cy="73" r="2.5" fill="#FFF"/>
-                        <circle cx="130" cy="75" r="7" fill="#4A2C0F"/>
-                        <circle cx="130" cy="73" r="2.5" fill="#FFF"/>
-                    </g>
-                    <!-- Nose & Mouth -->
-                    <polygon points="100,82 96,78 104,78" fill="#E28743" stroke="#4A2C0F" stroke-width="1.5"/>
-                    <path d="M 100 82 Q 95 88 90 85 M 100 82 Q 105 88 110 85" fill="none" stroke="#4A2C0F" stroke-width="3" stroke-linecap="round"/>
-                </svg>
-            </div>
-
-            <!-- Profile Logo (Secret Trigger - Click 3 Times) -->
-            <div class="mt-4 mb-4">
-                <div onclick="handleLogoClick()" title="เคาะตรงนี้ 3 ครั้งเพื่อเข้าสู่โหมดตั้งค่าลับ 🐾" class="relative w-20 h-20 mx-auto mb-2 rounded-full border-4 border-catYellow overflow-hidden bg-catWarm flex items-center justify-center shadow-inner cursor-pointer hover:scale-105 active:scale-95 transition-all">
-                    <img id="shopLogo" src="https://placehold.co/150x150/FECA57/4A3E3D?text=🐱" alt="Shop Logo" class="w-full h-full object-cover">
-                    <div class="absolute bottom-0 inset-x-0 bg-catBrown/20 text-[8px] text-white font-bold py-0.5 pointer-events-none select-none">OWNER</div>
-                </div>
-                <h1 id="shopNameText" class="text-xl font-bold text-catBrown tracking-wide">ร้านส้มหยุดแคทช็อป</h1>
-                <p id="shopTaglineText" class="text-xs text-catOrange font-semibold">เหมียวๆ ยินดีต้อนรับน้าค๊าา 🐾</p>
-            </div>
-
-            <div class="relative bg-[#FFF9F2] border-2 border-dashed border-catOrangeLight rounded-2xl p-4 mb-5 shadow-sm">
-                <i class="fa-solid fa-sparkles absolute top-2 left-2 text-catYellow sparkle-slow text-lg"></i>
-                <i class="fa-solid fa-star absolute bottom-2 right-2 text-catYellow sparkle-slow text-sm"></i>
-
-                <div class="flex items-center justify-center gap-1 mb-3">
-                    <span class="text-xs bg-catOrange text-white px-3 py-1 rounded-full font-bold tracking-wide uppercase">Scan to Pay</span>
-                </div>
-
-                <!-- Click to Zoom Trigger -->
-                <div onclick="openQrZoom()" class="bg-white p-3 rounded-xl inline-block shadow-md border border-catWarm relative group cursor-zoom-in hover:shadow-lg transition-all duration-300">
-                    <img id="qrImage" src="https://promptpay.io/0812345678/0.png" alt="Payment QR Code" class="w-48 h-48 mx-auto object-contain transition-transform duration-300 group-hover:scale-105">
-                    <div class="absolute inset-0 bg-catBrown/5 opacity-0 group-hover:opacity-100 rounded-xl flex items-center justify-center transition-all">
-                        <span class="bg-white/90 text-catBrown text-xs font-bold px-2.5 py-1.5 rounded-full shadow-sm flex items-center gap-1">
-                            <i class="fa-solid fa-magnifying-glass-plus text-catOrange"></i> แตะเพื่อขยาย
-                        </span>
-                    </div>
-                </div>
-
-                <p class="text-xs text-catBrown/70 mt-3 font-medium flex items-center justify-center gap-1">
-                    <i class="fa-solid fa-qrcode"></i> สแกนจ่ายผ่านแอปธนาคารได้ทุกแอปเลยน้า
-                </p>
-            </div>
-
-            <!-- Bank Accounts Cards Render Target -->
-            <div id="bankCardsContainer" class="space-y-3"></div>
-
-            <!-- Social Contacts Section -->
-            <div id="contactSection" class="mt-4 pt-4 border-t-2 border-dashed border-catWarm text-left">
-                <p class="text-[10px] text-catBrown/60 uppercase font-bold tracking-wider mb-2 flex items-center gap-1">
-                    <i class="fa-solid fa-comments text-catOrange"></i> ช่องทางการติดต่อ / Contact Us
-                </p>
-                <div class="flex flex-wrap gap-2" id="contactContainer">
-                    <a id="linkLine" href="https://line.me" target="_blank" class="flex-1 min-w-[90px] bg-emerald-50 hover:bg-emerald-100 text-emerald-800 border border-emerald-200 py-2 px-3 rounded-xl text-xs font-bold transition-all flex items-center justify-center gap-1.5">
-                        <i class="fa-brands fa-line text-lg text-emerald-500"></i>
-                        <span id="labelLine">@cozycat</span>
-                    </a>
-                    <a id="linkIG" href="https://instagram.com" target="_blank" class="flex-1 min-w-[90px] bg-amber-50 hover:bg-amber-100 text-amber-800 border border-amber-200 py-2 px-3 rounded-xl text-xs font-bold transition-all flex items-center justify-center gap-1.5">
-                        <i class="fa-brands fa-instagram text-lg text-amber-600"></i>
-                        <span id="labelIG">cozycat_shop</span>
-                    </a>
-                    <a id="linkFB" href="https://facebook.com" target="_blank" class="flex-1 min-w-[90px] bg-blue-50 hover:bg-blue-100 text-blue-800 border border-blue-200 py-2 px-3 rounded-xl text-xs font-bold transition-all flex items-center justify-center gap-1.5">
-                        <i class="fa-brands fa-facebook text-lg text-blue-500"></i>
-                        <span id="labelFB">CozyCat</span>
-                    </a>
-                </div>
-            </div>
-
-            <!-- Bottom Interactive Info -->
-            <div class="mt-5 pt-3 border-t border-dashed border-catOrangeLight/50 flex justify-between items-center text-xs text-catBrown/60">
-                <span class="flex items-center gap-1"><i class="fa-solid fa-shield-halved text-catTeal"></i> ปลอดภัย ตรวจสอบได้</span>
-                <span id="meowButton" onclick="triggerPurrSound()" class="cursor-pointer hover:text-catOrange transition-all flex items-center gap-1 select-none">
-                    สะกิดเจ้าเหมียว <span class="animate-bounce">🐾</span>
-                </span>
-            </div>
-
+      <!-- ส่วนหัวโปรไฟล์ร้านค้า (คลิกรัวๆ 3 ครั้งตรงโลโก้เพื่อเปิดหน้าตั้งค่าลับ) -->
+      <div class="flex flex-col items-center mt-2 cursor-pointer" onclick="handleLogoClick()">
+        <div class="relative w-20 h-20 rounded-full border-4 border-amber-300 bg-amber-100 flex items-center justify-center shadow-inner overflow-hidden transition-all duration-300 transform hover:scale-110 active:rotate-12" id="shopLogoContainer">
+          <!-- โลโก้จะถูกใส่ผ่าน JS -->
         </div>
-
-        <!-- Sleeping Cat Illustration (Bottom) -->
-        <div class="mt-8 text-center flex flex-col items-center relative z-20">
-            <div class="relative w-24 h-24">
-                <svg viewBox="0 0 100 100" class="w-full h-full">
-                    <path class="cat-tail" d="M 50 80 Q 25 85 20 60" fill="none" stroke="#E17E2B" stroke-width="8" stroke-linecap="round"/>
-                    <ellipse cx="50" cy="75" rx="30" ry="20" fill="#F5C284" stroke="#4A2C0F" stroke-width="3"/>
-                    <circle cx="50" cy="50" r="20" fill="#E17E2B" stroke="#4A2C0F" stroke-width="3"/>
-                    <circle cx="36" cy="54" r="3.5" fill="#FFE8D6"/>
-                    <circle cx="64" cy="54" r="3.5" fill="#FFE8D6"/>
-                    <path d="M 38 48 Q 43 52 45 48" fill="none" stroke="#4A2C0F" stroke-width="2.5" stroke-linecap="round"/>
-                    <path d="M 55 48 Q 57 52 62 48" fill="none" stroke="#4A2C0F" stroke-width="2.5" stroke-linecap="round"/>
-                    <polygon points="32,38 30,18 48,34" fill="#E17E2B" stroke="#4A2C0F" stroke-width="3" stroke-linejoin="round"/>
-                    <polygon points="68,38 70,18 52,34" fill="#E17E2B" stroke="#4A2C0F" stroke-width="3" stroke-linejoin="round"/>
-                </svg>
-            </div>
-            <p class="text-xs text-catBrown/60 italic mt-1 font-medium">"โอนค่าขนมให้เจ้าเหมียวด้วยน้าเหมียว~"</p>
+        <div class="mt-3 text-center">
+          <h1 id="displayShopName" class="font-title text-xl font-bold text-amber-900 tracking-wide">ชื่อร้านค้า</h1>
+          <p id="displayShopTagline" class="text-xs text-amber-700/80 mt-0.5">คำโปรยร้านค้า 🐾</p>
         </div>
+      </div>
+
+      <!-- ส่วนคิวอาร์โค้ดพร้อมเพย์ -->
+      <div class="w-full flex flex-col items-center mt-6">
+        <div class="bg-amber-50/50 rounded-2xl p-4 border border-dashed border-amber-300/60 w-full flex flex-col items-center relative group">
+          <span class="absolute -top-3 px-3 py-0.5 bg-amber-500 text-white text-[10px] font-bold rounded-full uppercase tracking-wider shadow-sm font-title">Scan to Pay</span>
+          
+          <div class="bg-white p-3 rounded-xl shadow-md border border-amber-200 cursor-pointer relative overflow-hidden transition-all duration-300 transform group-hover:scale-105 active:scale-95 mt-2" onclick="openQrModal()">
+            <img id="qrImage" src="https://api.qrserver.com/v1/create-qr-code/?size=180x180&data=0" alt="QR Code พร้อมเพย์" class="w-40 h-40 object-contain">
+            <div class="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 flex items-center justify-center transition-opacity duration-300 rounded-xl">
+              <span class="text-white text-xs font-semibold flex items-center gap-1">
+                <i data-lucide="zoom-in" class="w-4 h-4"></i> แตะเพื่อขยายใหญ่
+              </span>
+            </div>
+          </div>
+          
+          <p id="displayAmountText" class="text-xs text-amber-800 font-semibold mt-3 text-center bg-amber-100/70 px-3 py-1 rounded-full border border-amber-200/50">
+            สแกนเพื่อจ่าย แล้วกดเสร็จสิ้นเหมียว!
+          </p>
+        </div>
+      </div>
+
+      <!-- รายการบัญชีธนาคารต่าง ๆ -->
+      <div class="w-full flex flex-col gap-3 mt-5" id="accountsListContainer">
+        <!-- บัญชีจะถูกเรนเดอร์ตรงนี้ผ่าน JS -->
+      </div>
+
+      <!-- ช่องทางติดต่อโซเชียลมีเดีย -->
+      <div id="socialContainer" class="w-full mt-6 pt-5 border-t border-amber-100 flex flex-col items-center">
+        <p class="text-[11px] font-bold text-amber-800/60 tracking-wider uppercase mb-3">ช่องทางการติดต่อ / Contact Us</p>
+        <div class="flex justify-center flex-wrap gap-2.5 w-full" id="socialLinksBox">
+          <!-- ลิงก์โซเชียลจะเรนเดอร์ตรงนี้ -->
+        </div>
+      </div>
+
+      <div class="mt-6 flex items-center gap-1.5 text-[11px] text-emerald-700/80 bg-emerald-50 px-3 py-1.5 rounded-full border border-emerald-100">
+        <i data-lucide="shield-check" class="w-3.5 h-3.5"></i>
+        <span>ปลอดภัย ตรวจสอบได้ สะกิดเจ้าเหมียว 🐾</span>
+      </div>
 
     </div>
+  </main>
 
-    <!-- Web Footer -->
-    <footer class="text-center py-4 text-xs text-catBrown/40 font-semibold tracking-wider relative z-10">
-        © 2026 Cozy Cat Payment One-Page. All Rights Reserved. 🐾
-    </footer>
+  <footer class="relative z-10 text-center py-4 text-[10px] text-amber-800/50 mt-4">
+    <p>© 2026 Cozy Cat Payment One-Page. All Rights Reserved. 🐾</p>
+  </footer>
 
-    <!-- Zoom QR Modal Overlay -->
-    <div id="qrZoomModal" onclick="closeQrZoom()" class="fixed inset-0 bg-catBrown/75 backdrop-blur-md z-50 flex items-center justify-center p-4 opacity-0 pointer-events-none transition-all duration-300">
-        <div onclick="event.stopPropagation()" class="bg-white rounded-[2.5rem] border-[6px] border-catYellow shadow-2xl p-6 text-center max-w-sm w-full transform scale-95 transition-all duration-300 relative" id="zoomCard">
-            <button onclick="closeQrZoom()" class="absolute -top-4 -right-4 bg-catOrange text-white w-10 h-10 rounded-full flex items-center justify-center border-4 border-white shadow-lg hover:scale-110 active:scale-95 transition-all">
-                <i class="fa-solid fa-xmark text-lg"></i>
-            </button>
-            <div class="mb-4">
-                <span class="bg-catOrange/10 text-catOrange text-xs font-bold px-3 py-1.5 rounded-full inline-flex items-center gap-1">
-                    <i class="fa-solid fa-qrcode"></i> คิวอาร์โค้ดขยายใหญ่ 🐾
-                </span>
-                <p id="zoomShopName" class="text-lg font-bold text-catBrown mt-2">ร้านส้มหยุดแคทช็อป</p>
-                <p id="zoomAmountText" class="text-xs text-catOrange font-semibold mt-0.5">โปรดระบุจำนวนเงินเมื่อสแกน</p>
-            </div>
-            <div class="bg-[#FFF9F2] p-4 rounded-2xl border-2 border-dashed border-catOrangeLight/50 inline-block mb-3">
-                <img id="qrZoomImage" src="https://promptpay.io/0812345678/0.png" alt="Zoomed QR" class="w-64 h-64 max-w-full mx-auto object-contain">
-            </div>
-            <p class="text-xs text-catBrown/60 font-semibold flex items-center justify-center gap-1.5 animate-pulse">
-                <i class="fa-solid fa-mobile-screen-button"></i> สแกนเพื่อจ่าย แล้วกดเสร็จสิ้นเหมียว!
-            </p>
+  <!-- ==================== โมดอลตั้งค่าลับ (Secret Config Modal) ==================== -->
+  <div id="configModal" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 opacity-0 pointer-events-none transition-all duration-300">
+    <div class="bg-white w-full max-w-md rounded-3xl shadow-2xl border border-amber-100 max-h-[85vh] flex flex-col overflow-hidden transform scale-95 transition-transform duration-300">
+      
+      <div class="p-5 border-b border-amber-50 bg-amber-50/50 flex justify-between items-center">
+        <div class="flex items-center gap-2">
+          <div class="bg-amber-100 p-1.5 rounded-lg text-amber-800">
+            <i data-lucide="settings" class="w-5 h-5"></i>
+          </div>
+          <div>
+            <h2 class="font-title font-bold text-amber-900 text-base leading-tight">ตั้งค่าข้อมูลร้านค้า & บัญชี</h2>
+            <p class="text-[10px] text-amber-700">เฉพาะเจ้าของร้าน (ทางลัดลับเคาะโลโก้ 3 ครั้ง)</p>
+          </div>
         </div>
-    </div>
+        <button onclick="closeConfigModal()" class="text-amber-600 hover:bg-amber-100 p-1.5 rounded-full transition-all">
+          <i data-lucide="x" class="w-5 h-5"></i>
+        </button>
+      </div>
 
-    <!-- Setup Modal Container (Secret Access - Opened by clicking logo 3 times) -->
-    <div id="setupModal" class="fixed inset-0 bg-catBrown/50 backdrop-blur-sm z-50 flex items-center justify-center p-4 opacity-0 pointer-events-none transition-all duration-300">
-        <div class="bg-white rounded-3xl border-4 border-catYellow shadow-2xl w-full max-w-md max-h-[90vh] overflow-y-auto p-6 relative">
-            
-            <button onclick="toggleSetupModal()" class="absolute top-4 right-4 bg-catWarm hover:bg-catOrangeLight/30 text-catBrown w-8 h-8 rounded-full flex items-center justify-center border-2 border-catOrangeLight transition-all">
-                <i class="fa-solid fa-xmark"></i>
-            </button>
-
-            <h2 class="text-lg font-bold text-catBrown mb-4 flex items-center gap-2 border-b-2 border-dashed border-catOrangeLight/30 pb-2">
-                <i class="fa-solid fa-sliders text-catOrange"></i> ตั้งค่าข้อมูลร้านค้า & บัญชี (เจ้าของร้าน)
-            </h2>
-
-            <div class="space-y-4 text-sm">
-                <div class="space-y-2">
-                    <label class="block font-bold text-catBrown">ชื่อร้านค้า (Shop Name)</label>
-                    <input type="text" id="inputShopName" value="ร้านส้มหยุดแคทช็อป" class="w-full px-4 py-2 rounded-xl border-2 border-catWarm focus:border-catOrange outline-none transition-all">
-                </div>
-
-                <div class="space-y-2">
-                    <label class="block font-bold text-catBrown">คำโปรยร้านค้า (Tagline)</label>
-                    <input type="text" id="inputShopTagline" value="เหมียวๆ ยินดีต้อนรับน้าค๊าา 🐾" class="w-full px-4 py-2 rounded-xl border-2 border-catWarm focus:border-catOrange outline-none transition-all">
-                </div>
-
-                <!-- Dynamic Multiple Accounts Setup Form -->
-                <div class="border-t-2 border-dashed border-catOrangeLight/30 pt-3 space-y-3">
-                    <div class="flex justify-between items-center">
-                        <label class="block font-bold text-catBrown">ข้อมูลบัญชีร้านค้า</label>
-                        <button type="button" onclick="addBankAccountField()" class="bg-catTeal hover:bg-catTeal/90 text-white px-3 py-1 rounded-full text-xs font-bold transition-all flex items-center gap-1 shadow-sm">
-                            <i class="fa-solid fa-plus"></i> เพิ่มบัญชี
-                        </button>
-                    </div>
-                    <div id="bankAccountsSetupContainer" class="space-y-3"></div>
-                </div>
-
-                <!-- Social Contacts Inputs -->
-                <div class="border-t-2 border-dashed border-catOrangeLight/30 pt-3 space-y-3">
-                    <h3 class="font-bold text-catOrange text-xs uppercase tracking-wider">ช่องทางติดต่อเพิ่มเติม (ใส่ข้อมูลว่างเพื่อซ่อนปุ่ม)</h3>
-                    <div class="grid grid-cols-1 gap-2">
-                        <div class="flex items-center gap-2">
-                            <span class="w-20 font-semibold text-catBrown flex items-center gap-1"><i class="fa-brands fa-line text-lg text-emerald-500"></i> Line</span>
-                            <input type="text" id="inputLine" value="@cozycat" placeholder="ไอดี Line" class="flex-grow px-3 py-1.5 rounded-xl border-2 border-catWarm focus:border-catOrange outline-none text-xs">
-                        </div>
-                        <div class="flex items-center gap-2">
-                            <span class="w-20 font-semibold text-catBrown flex items-center gap-1"><i class="fa-brands fa-instagram text-lg text-amber-600"></i> IG</span>
-                            <input type="text" id="inputIG" value="cozycat_shop" placeholder="ชื่อไอจี" class="flex-grow px-3 py-1.5 rounded-xl border-2 border-catWarm focus:border-catOrange outline-none text-xs">
-                        </div>
-                        <div class="flex items-center gap-2">
-                            <span class="w-20 font-semibold text-catBrown flex items-center gap-1"><i class="fa-brands fa-facebook text-lg text-blue-500"></i> Facebook</span>
-                            <input type="text" id="inputFB" value="CozyCat" placeholder="ชื่อเพจเฟซบุ๊ก" class="flex-grow px-3 py-1.5 rounded-xl border-2 border-catWarm focus:border-catOrange outline-none text-xs">
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Avatar Selectors -->
-                <div class="space-y-2">
-                    <label class="block font-bold text-catBrown">โลโก้ร้านค้า (เลือกรูปน้องแมว)</label>
-                    <div class="grid grid-cols-4 gap-2">
-                        <button onclick="selectLogo('https://placehold.co/150x150/FECA57/4A3E3D?text=🐱')" class="border-2 border-catYellow p-1 rounded-xl hover:scale-105 transition-all bg-catWarm">
-                            <img src="https://placehold.co/150x150/FECA57/4A3E3D?text=🐱" class="w-full rounded-lg">
-                        </button>
-                        <button onclick="selectLogo('https://placehold.co/150x150/FF9F43/4A3E3D?text=🦁')" class="border-2 border-transparent p-1 rounded-xl hover:scale-105 transition-all bg-catWarm">
-                            <img src="https://placehold.co/150x150/FF9F43/4A3E3D?text=🦁" class="w-full rounded-lg">
-                        </button>
-                        <button onclick="selectLogo('https://placehold.co/150x150/54A0FF/4A3E3D?text=🐳')" class="border-2 border-transparent p-1 rounded-xl hover:scale-105 transition-all bg-catWarm">
-                            <img src="https://placehold.co/150x150/54A0FF/4A3E3D?text=🐳" class="w-full rounded-lg">
-                        </button>
-                        <button onclick="selectLogo('https://placehold.co/150x150/1DD1A1/4A3E3D?text=🌱')" class="border-2 border-transparent p-1 rounded-xl hover:scale-105 transition-all bg-catWarm">
-                            <img src="https://placehold.co/150x150/1DD1A1/4A3E3D?text=🌱" class="w-full rounded-lg">
-                        </button>
-                    </div>
-                </div>
-
-                <!-- PromptPay Config Panel -->
-                <div class="border-t-2 border-dashed border-catOrangeLight/30 pt-3 space-y-3">
-                    <h3 class="font-bold text-catOrange text-xs uppercase tracking-wider">ระบบสร้าง QR Code พร้อมเพย์ (PromptPay QR)</h3>
-                    <div class="space-y-2">
-                        <label class="block font-bold text-catBrown">เบอร์พร้อมเพย์ หรือ เลขบัตรประชาชน</label>
-                        <input type="text" id="inputPromptPayID" value="0812345678" placeholder="เช่น 0812345678" class="w-full px-4 py-2 rounded-xl border-2 border-catWarm focus:border-catOrange outline-none transition-all font-mono">
-                    </div>
-                    <div class="space-y-2">
-                        <label class="block font-bold text-catBrown">จำนวนเงิน (บาท) *ใส่ 0 เพื่อให้ระบุจำนวนเอง</label>
-                        <input type="number" id="inputAmount" value="0" step="0.01" min="0" class="w-full px-4 py-2 rounded-xl border-2 border-catWarm focus:border-catOrange outline-none transition-all font-mono">
-                    </div>
-                </div>
-
-                <button onclick="applySettings()" class="w-full bg-catOrange hover:bg-catOrange/90 text-white font-bold py-3 px-4 rounded-xl shadow-md transition-all active:scale-95 flex items-center justify-center gap-2">
-                    <i class="fa-solid fa-circle-check"></i> บันทึกข้อมูลและสร้าง QR 🐾
-                </button>
-
-            </div>
-        </div>
-    </div>
-
-    <!-- Client-Side Javascript Handlers -->
-    <script>
+      <div class="p-5 overflow-y-auto no-scrollbar flex-1 space-y-5 text-sm text-slate-700">
         
-        // Synth Chime sound generator for high compatibility
-        function playCuteSound(frequency, duration, type) {
-            if (!type) { type = 'sine'; }
-            try {
-                var AudioContext = window.AudioContext || window.webkitAudioContext;
-                if (!AudioContext) return;
-                var ctxAudio = new AudioContext();
-                var osc = ctxAudio.createOscillator();
-                var gain = ctxAudio.createGain();
-                
-                osc.type = type;
-                osc.frequency.setValueAtTime(frequency, ctxAudio.currentTime);
-                osc.frequency.exponentialRampToValueAtTime(frequency * 1.5, ctxAudio.currentTime + duration);
-                
-                gain.gain.setValueAtTime(0.15, ctxAudio.currentTime);
-                gain.gain.exponentialRampToValueAtTime(0.01, ctxAudio.currentTime + duration);
-                
-                osc.connect(gain);
-                gain.connect(ctxAudio.destination);
-                
-                osc.start();
-                osc.stop(ctxAudio.currentTime + duration);
-            } catch (error) {
-                console.log('Audio error:', error);
-            }
-        }
+        <!-- ข้อมูลทั่วไป -->
+        <div class="space-y-3">
+          <h3 class="font-title font-semibold text-xs text-amber-800 uppercase tracking-wider flex items-center gap-1.5">
+            <i data-lucide="store" class="w-3.5 h-3.5"></i>ข้อมูลทั่วไปของร้าน
+          </h3>
+          <div>
+            <label class="block text-xs font-semibold text-slate-600 mb-1">ชื่อร้านค้า (Shop Name)</label>
+            <input type="text" id="inputShopName" class="w-full border border-slate-200 rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-amber-500/50 bg-slate-50/50">
+          </div>
+          <div>
+            <label class="block text-xs font-semibold text-slate-600 mb-1">คำโปรยร้านค้า (Tagline)</label>
+            <input type="text" id="inputShopTagline" class="w-full border border-slate-200 rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-amber-500/50 bg-slate-50/50">
+          </div>
+          <div>
+            <label class="block text-xs font-semibold text-slate-600 mb-2">โลโก้ร้านค้า (เลือกรูปน้องแมว)</label>
+            <div class="grid grid-cols-4 gap-2" id="avatarSelector"></div>
+          </div>
+        </div>
 
-        function triggerMeowSound() {
-            playCuteSound(380, 0.25, 'triangle');
-        }
+        <hr class="border-slate-100">
 
-        function triggerPurrSound() {
-            playCuteSound(200, 0.1, 'sine');
-            setTimeout(function() { playCuteSound(250, 0.1, 'sine'); }, 100);
-            setTimeout(function() { playCuteSound(300, 0.15, 'sine'); }, 200);
-            
-            var eyes = document.getElementById('catEyes');
-            if (eyes) {
-                eyes.style.transform = 'scaleY(0.1)';
-                eyes.style.transformOrigin = 'center 75px';
-                setTimeout(function() {
-                    eyes.style.transform = 'scaleY(1)';
-                }, 150);
-            }
-        }
+        <!-- บัญชีธนาคารต่างๆ -->
+        <div class="space-y-3">
+          <div class="flex justify-between items-center">
+            <h3 class="font-title font-semibold text-xs text-amber-800 uppercase tracking-wider flex items-center gap-1.5">
+              <i data-lucide="credit-card" class="w-3.5 h-3.5"></i>ข้อมูลบัญชีร้านค้า
+            </h3>
+            <button onclick="addNewAccountRow()" class="flex items-center gap-1 text-[11px] font-bold text-emerald-700 bg-emerald-50 border border-emerald-200 hover:bg-emerald-100 px-2.5 py-1 rounded-full transition-all">
+              <i data-lucide="plus" class="w-3.5 h-3.5"></i>เพิ่มบัญชี
+            </button>
+          </div>
 
-        // Custom Bank Palettes (No Pure/Standard Pink)
-        var bankStyles = {
-            kbank: {
-                name: 'กสิกรไทย (K-Bank)',
-                abbr: 'KBANK',
-                color: 'bg-[#00A950]',
-                gradient: 'from-[#00A950]/15 to-catYellow/10',
-                borderColor: 'border-[#00A950]/20'
-            },
-            scb: {
-                name: 'ไทยพาณิชย์ (SCB)',
-                abbr: 'SCB',
-                color: 'bg-[#4E2A84]',
-                gradient: 'from-[#4E2A84]/15 to-catYellow/10',
-                borderColor: 'border-[#4E2A84]/20'
-            },
-            bbl: {
-                name: 'กรุงเทพ (BBL)',
-                abbr: 'BBL',
-                color: 'bg-[#002D84]',
-                gradient: 'from-[#002D84]/15 to-catYellow/10',
-                borderColor: 'border-[#002D84]/20'
-            },
-            ktb: {
-                name: 'กรุงไทย (KTB)',
-                abbr: 'KTB',
-                color: 'bg-[#00A1E0]',
-                gradient: 'from-[#00A1E0]/15 to-catYellow/10',
-                borderColor: 'border-[#00A1E0]/20'
-            },
-            tcloud: {
-                name: 'ทหารไทยธนชาต (TTB)',
-                abbr: 'TTB',
-                color: 'bg-[#F15A22]',
-                gradient: 'from-[#F15A22]/15 to-catYellow/10',
-                borderColor: 'border-[#F15A22]/20'
-            },
-            gsp: {
-                name: 'ออมสิน (GSB)',
-                abbr: 'GSB',
-                color: 'bg-[#E03A3A]',
-                gradient: 'from-[#E03A3A]/15 to-catYellow/10',
-                borderColor: 'border-[#E03A3A]/20'
-            }
+          <div class="space-y-4" id="accountsInputsContainer"></div>
+        </div>
+
+        <hr class="border-slate-100">
+
+        <!-- ช่องทางติดต่อ -->
+        <div class="space-y-3">
+          <h3 class="font-title font-semibold text-xs text-amber-800 uppercase tracking-wider flex items-center gap-1.5">
+            <i data-lucide="message-square" class="w-3.5 h-3.5"></i>ช่องทางติดต่อเพิ่มเติม (เว้นว่างไว้เพื่อซ่อนปุ่ม)
+          </h3>
+          <div>
+            <label class="block text-xs font-semibold text-slate-600 mb-1">Line ID / Link (เช่น @cozycat)</label>
+            <input type="text" id="inputLine" class="w-full border border-slate-200 rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-amber-500/50 bg-slate-50/50">
+          </div>
+          <div>
+            <label class="block text-xs font-semibold text-slate-600 mb-1">Instagram (เช่น cozycat_shop)</label>
+            <input type="text" id="inputIG" class="w-full border border-slate-200 rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-amber-500/50 bg-slate-50/50">
+          </div>
+          <div>
+            <label class="block text-xs font-semibold text-slate-600 mb-1">Facebook (เช่น CozyCat)</label>
+            <input type="text" id="inputFB" class="w-full border border-slate-200 rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-amber-500/50 bg-slate-50/50">
+          </div>
+        </div>
+
+      </div>
+
+      <div class="p-4 border-t border-slate-100 bg-slate-50 flex gap-2">
+        <button onclick="closeConfigModal()" class="flex-1 py-2.5 rounded-xl border border-slate-200 text-slate-600 font-semibold hover:bg-white transition-all text-sm">
+          ยกเลิก
+        </button>
+        <button onclick="saveConfig()" class="flex-1 py-2.5 rounded-xl bg-amber-600 hover:bg-amber-700 text-white font-semibold shadow-md transition-all text-sm flex items-center justify-center gap-1.5">
+          <i data-lucide="save" class="w-4 h-4"></i> บันทึกข้อมูล 🐾
+        </button>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ==================== โมดอลซูมขยายใหญ่ (QR Modal) ==================== -->
+  <div id="qrModal" class="fixed inset-0 bg-black/80 backdrop-blur-md z-50 flex flex-col items-center justify-center p-4 opacity-0 pointer-events-none transition-all duration-300" onclick="closeQrModal()">
+    <div class="relative max-w-sm w-full bg-white rounded-3xl p-6 border border-amber-100 shadow-2xl flex flex-col items-center transform scale-95 transition-transform duration-300" onclick="event.stopPropagation()">
+      <button onclick="closeQrModal()" class="absolute top-4 right-4 text-slate-400 hover:bg-slate-100 p-1.5 rounded-full transition-all">
+        <i data-lucide="x" class="w-5 h-5"></i>
+      </button>
+      
+      <div class="flex items-center gap-1 text-amber-800 font-title font-semibold text-sm mb-4">
+        <i data-lucide="scan-face" class="w-4 h-4"></i>
+        <span>คิวอาร์โค้ดขยายใหญ่</span>
+      </div>
+
+      <div class="bg-amber-50 p-2 rounded-2xl border border-amber-200">
+        <img id="modalQrImage" src="https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=0" alt="QR Code" class="w-64 h-64 object-contain rounded-lg">
+      </div>
+
+      <div class="mt-4 text-center">
+        <h4 id="modalShopName" class="font-title font-bold text-amber-900 text-base">ชื่อร้าน</h4>
+        <p id="modalAmountText" class="text-xs text-amber-700 mt-1 font-semibold bg-amber-50 px-4 py-1.5 rounded-full border border-amber-100">โปรดระบุจำนวนเงินเมื่อสแกน</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- แจ้งเตือน Toast คัดลอกเลขสำเร็จ -->
+  <div id="toastAlert" class="fixed bottom-0 left-1/2 -translate-x-1/2 z-50 bg-amber-900/90 backdrop-blur-md text-white text-xs px-4 py-2.5 rounded-full shadow-lg border border-amber-800 flex items-center gap-2 opacity-0 pointer-events-none transition-all duration-300">
+    <i data-lucide="check-circle-2" class="w-4 h-4 text-emerald-400"></i>
+    <span id="toastText">คัดลอกเลขบัญชีสำเร็จเหมียว!</span>
+  </div>
+
+  <!-- ==================== การทำงานฝั่ง Script (ปลอดภัย ไร้ Backticks) ==================== -->
+  <script>
+    var LOGO_PRESETS = ['orange-cat', 'grey-cat', 'siamese-cat', 'cute-paw'];
+
+    var SVGS = {
+      'orange-cat': '<svg class="w-16 h-16" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg"><circle cx="50" cy="50" r="45" fill="#F4A261"/><path d="M30 40 L40 15 L48 35 Z" fill="#E2722B"/><path d="M70 40 L60 15 L52 35 Z" fill="#E2722B"/><circle cx="38" cy="48" r="5" fill="#264653"/><circle cx="62" cy="48" r="5" fill="#264653"/><polygon points="48,56 52,56 50,59" fill="#E76F51"/><path d="M46 61 C48 63, 50 63, 50 61 C50 63, 52 63, 54 61" stroke="#264653" stroke-width="2" stroke-linecap="round" fill="none"/><ellipse cx="30" cy="54" rx="4" ry="2" fill="#E76F51" fill-opacity="0.4"/><ellipse cx="70" cy="54" rx="4" ry="2" fill="#E76F51" fill-opacity="0.4"/></svg>',
+      'grey-cat': '<svg class="w-16 h-16" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg"><circle cx="50" cy="50" r="45" fill="#94A3B8"/><path d="M30 40 L40 15 L48 35 Z" fill="#475569"/><path d="M70 40 L60 15 L52 35 Z" fill="#475569"/><circle cx="38" cy="48" r="5" fill="#1E293B"/><circle cx="62" cy="48" r="5" fill="#1E293B"/><polygon points="48,56 52,56 50,59" fill="#E2E8F0"/><path d="M46 61 C48 63, 50 63, 50 61 C50 63, 52 63, 54 61" stroke="#1E293B" stroke-width="2" stroke-linecap="round" fill="none"/><ellipse cx="30" cy="54" rx="4" ry="2" fill="#FDA4AF" fill-opacity="0.4"/><ellipse cx="70" cy="54" rx="4" ry="2" fill="#FDA4AF" fill-opacity="0.4"/></svg>',
+      'siamese-cat': '<svg class="w-16 h-16" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg"><circle cx="50" cy="50" r="45" fill="#F1F5F9"/><path d="M30 40 L40 15 L48 35 Z" fill="#475569"/><path d="M70 40 L60 15 L52 35 Z" fill="#475569"/><path d="M30 65 C30 40, 70 40, 70 65 Z" fill="#475569" fill-opacity="0.3"/><circle cx="38" cy="48" r="5" fill="#0EA5E9"/><circle cx="62" cy="48" r="5" fill="#0EA5E9"/><polygon points="48,56 52,56 50,59" fill="#475569"/><path d="M46 61 C48 63, 50 63, 50 61 C50 63, 52 63, 54 61" stroke="#475569" stroke-width="2" stroke-linecap="round" fill="none"/></svg>',
+      'cute-paw': '<svg class="w-16 h-16" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg"><circle cx="50" cy="50" r="45" fill="#FDE68A"/><ellipse cx="50" cy="62" rx="18" ry="14" fill="#F59E0B"/><circle cx="28" cy="38" r="7" fill="#F59E0B"/><circle cx="43" cy="28" r="8" fill="#F59E0B"/><circle cx="58" cy="28" r="8" fill="#F59E0B"/><circle cx="73" cy="38" r="7" fill="#F59E0B"/></svg>'
+    };
+
+    var BANKS_DB = {
+      'kbank': { name: 'กสิกรไทย (KBank)', color: '#138F2D', bg: '#EBF7EE', text: '#0F6B22' },
+      'scb': { name: 'ไทยพาณิชย์ (SCB)', color: '#4E2E7F', bg: '#F4EFFF', text: '#3E2466' },
+      'bbl': { name: 'กรุงเทพ (BBL)', color: '#003399', bg: '#EEF4FF', text: '#002570' },
+      'ktb': { name: 'กรุงไทย (KTB)', color: '#00AEEF', bg: '#EAF9FF', text: '#007AA8' },
+      'ttb': { name: 'ทหารไทยธนชาต (TTB)', color: '#F25C05', bg: '#FFF1E8', text: '#A83D00' },
+      'promptpay': { name: 'พร้อมเพย์ (PromptPay)', color: '#005F87', bg: '#EBF4F7', text: '#004766' },
+      'other': { name: 'บัญชีอื่นๆ', color: '#795548', bg: '#F5F1F0', text: '#543B32' }
+    };
+
+    var defaultData = {
+      shopName: 'ร้านส้มหยุดแคทช็อป',
+      shopTagline: 'เหมียวๆ ยินดีต้อนรับน้าค้า 🐾',
+      avatar: 'orange-cat',
+      lineId: 'cozycat',
+      igId: 'cozycat_shop',
+      fbId: 'CozyCat',
+      accounts: [
+        { bank: 'kbank', number: '123-4-56789-0', name: 'บจก. ส้มหยุดแคทช็อป', ppNumber: '0812345678', amount: 0 },
+        { bank: 'scb', number: '987-6-54321-0', name: 'นายส้มหยุด ใจดี', ppNumber: '', amount: 0 }
+      ]
+    };
+
+    var appState = null;
+    var logoClickCount = 0;
+    var logoClickTimeout = null;
+
+    // เล่นเสียง "เหมียว" เมื่อก๊อปปี้
+    function playCatMeowSound() {
+      try {
+        var AudioContext = window.AudioContext || window.webkitAudioContext;
+        if (!AudioContext) return;
+        var ctx = new AudioContext();
+        var osc = ctx.createOscillator();
+        var gain = ctx.createGain();
+        osc.type = 'triangle';
+        var now = ctx.currentTime;
+        
+        osc.frequency.setValueAtTime(320, now);
+        osc.frequency.exponentialRampToValueAtTime(780, now + 0.12);
+        osc.frequency.exponentialRampToValueAtTime(420, now + 0.38);
+        
+        gain.gain.setValueAtTime(0, now);
+        gain.gain.linearRampToValueAtTime(0.25, now + 0.04);
+        gain.gain.linearRampToValueAtTime(0.25, now + 0.18);
+        gain.gain.exponentialRampToValueAtTime(0.001, now + 0.38);
+        
+        osc.connect(gain);
+        gain.connect(ctx.destination);
+        osc.start(now);
+        osc.stop(now + 0.4);
+      } catch (e) {
+        console.log('Audio disabled until user gesture.');
+      }
+    }
+
+    // ทำงานเมื่อหน้าเว็บโหลด
+    window.onload = function() {
+      loadState();
+      renderApp();
+      initBackgroundCanvas();
+      lucide.createIcons();
+    };
+
+    function loadState() {
+      var saved = localStorage.getItem('cat_shop_payment_state');
+      if (saved) {
+        try {
+          appState = JSON.parse(saved);
+        } catch (e) {
+          appState = defaultData;
+        }
+      } else {
+        appState = defaultData;
+      }
+    }
+
+    function saveState() {
+      localStorage.setItem('cat_shop_payment_state', JSON.stringify(appState));
+    }
+
+    // วาดแสดงข้อมูลหลักหน้าร้าน
+    function renderApp() {
+      document.getElementById('displayShopName').textContent = appState.shopName;
+      document.getElementById('displayShopTagline').textContent = appState.shopTagline;
+      document.getElementById('shopLogoContainer').innerHTML = SVGS[appState.avatar] || SVGS['orange-cat'];
+
+      var accountsContainer = document.getElementById('accountsListContainer');
+      accountsContainer.innerHTML = '';
+      
+      var qrSourceSet = false;
+
+      appState.accounts.forEach(function(acc, idx) {
+        var bankMeta = BANKS_DB[acc.bank] || BANKS_DB['other'];
+        
+        var card = document.createElement('div');
+        card.className = 'w-full rounded-2xl p-4 border border-slate-100 flex items-center justify-between shadow-sm transition-all duration-300 bounce-hover';
+        card.style.backgroundColor = bankMeta.bg;
+
+        var leftSec = document.createElement('div');
+        leftSec.className = 'flex items-center gap-3.5';
+
+        var bankCircle = document.createElement('div');
+        bankCircle.className = 'w-10 h-10 rounded-full flex items-center justify-center text-white font-bold text-xs shadow-md shrink-0';
+        bankCircle.style.backgroundColor = bankMeta.color;
+        bankCircle.textContent = bankMeta.name.split(' ')[0].substring(0, 2);
+
+        var textBlock = document.createElement('div');
+        var title = document.createElement('p');
+        title.className = 'text-[11px] font-bold tracking-wider uppercase opacity-75';
+        title.style.color = bankMeta.text;
+        title.textContent = bankMeta.name;
+
+        var numAndName = document.createElement('div');
+        numAndName.className = 'mt-0.5';
+        var numText = document.createElement('p');
+        numText.className = 'font-semibold text-sm tracking-wide text-slate-800 flex items-center gap-1.5';
+        numText.innerHTML = acc.number + ' <span class="text-[10px] font-normal text-slate-400">(' + acc.name + ')</span>';
+
+        numAndName.appendChild(numText);
+        textBlock.appendChild(title);
+        textBlock.appendChild(numAndName);
+        leftSec.appendChild(bankCircle);
+        leftSec.appendChild(textBlock);
+
+        var rightSec = document.createElement('div');
+        var copyBtn = document.createElement('button');
+        copyBtn.className = 'px-3.5 py-1.5 rounded-xl text-xs font-semibold flex items-center gap-1 transition-all text-white shadow-sm';
+        copyBtn.style.backgroundColor = bankMeta.color;
+        copyBtn.innerHTML = '<i data-lucide="copy" class="w-3.5 h-3.5"></i> คัดลอก';
+        copyBtn.onclick = function() {
+          copyToClipboard(acc.number);
         };
 
-        var bankAccounts = [
-            {
-                bankKey: 'kbank',
-                accNumber: '123-4-56789-0',
-                accName: 'น.ส. นุ่มฟู แสนดี'
-            }
-        ];
+        rightSec.appendChild(copyBtn);
+        card.appendChild(leftSec);
+        card.appendChild(rightSec);
+        accountsContainer.appendChild(card);
 
-        // Dynamic rendering of multiple bank inputs in setup panel
-        function renderSetupBankAccounts() {
-            var container = document.getElementById('bankAccountsSetupContainer');
-            container.innerHTML = '';
-
-            bankAccounts.forEach(function(acc, index) {
-                var itemDiv = document.createElement('div');
-                itemDiv.className = 'p-3 bg-catWarm/50 rounded-2xl border-2 border-catOrangeLight/20 relative space-y-2.5 shadow-inner transition-all';
-                
-                var optionsHtml = '';
-                for (var key in bankStyles) {
-                    if (bankStyles.hasOwnProperty(key)) {
-                        optionsHtml += '<option value="' + key + '" ' + (acc.bankKey === key ? 'selected' : '') + '>' + bankStyles[key].name + '</option>';
-                    }
-                }
-
-                var deleteBtn = '';
-                if (bankAccounts.length > 1) {
-                    deleteBtn = '<button type="button" onclick="removeBankAccountField(' + index + ')" class="absolute top-2 right-2 text-rose-500 hover:text-rose-700 bg-white hover:bg-rose-50 w-7 h-7 rounded-full flex items-center justify-center border border-rose-200 shadow-sm transition-all active:scale-90"><i class="fa-solid fa-trash-can text-xs"></i></button>';
-                }
-
-                itemDiv.innerHTML = deleteBtn +
-                    '<div class="space-y-1">' +
-                    '  <span class="text-[10px] font-bold text-catOrange uppercase tracking-wider">บัญชีที่ ' + (index + 1) + '</span>' +
-                    '  <label class="block font-bold text-xs text-catBrown">เลือกธนาคาร</label>' +
-                    '  <select onchange="updateAccountData(' + index + ', \'bankKey\', this.value)" class="w-full px-3 py-1.5 rounded-xl border-2 border-catWarm focus:border-catOrange outline-none text-xs bg-white">' +
-                         optionsHtml +
-                    '  </select>' +
-                    '</div>' +
-                    '<div class="grid grid-cols-2 gap-2">' +
-                    '  <div class="space-y-1">' +
-                    '    <label class="block font-bold text-xs text-catBrown">เลขที่บัญชี</label>' +
-                    '    <input type="text" value="' + acc.accNumber + '" oninput="updateAccountData(' + index + ', \'accNumber\', this.value)" placeholder="เช่น 123-4-56789-0" class="w-full px-3 py-1.5 rounded-xl border-2 border-catWarm focus:border-catOrange outline-none text-xs font-mono bg-white">' +
-                    '  </div>' +
-                    '  <div class="space-y-1">' +
-                    '    <label class="block font-bold text-xs text-catBrown">ชื่อบัญชีผู้รับเงิน</label>' +
-                    '    <input type="text" value="' + acc.accName + '" oninput="updateAccountData(' + index + ', \'accName\', this.value)" placeholder="ชื่อ-นามสกุล" class="w-full px-3 py-1.5 rounded-xl border-2 border-catWarm focus:border-catOrange outline-none text-xs bg-white">' +
-                    '  </div>' +
-                    '</div>';
-
-                container.appendChild(itemDiv);
-            });
+        if (!qrSourceSet && acc.ppNumber) {
+          generatePromptPayQr(acc.ppNumber, acc.amount);
+          qrSourceSet = true;
         }
+      });
 
-        function updateAccountData(index, field, value) {
-            bankAccounts[index][field] = value;
+      if (!qrSourceSet) {
+        document.getElementById('qrImage').src = 'https://api.qrserver.com/v1/create-qr-code/?size=180x180&data=PleaseSetConfig';
+        document.getElementById('displayAmountText').textContent = 'แตะหัวแมวโลโก้ 3 ครั้งเพื่อตั้งค่าคิวอาร์พร้อมเพย์';
+      }
+
+      var socialLinksBox = document.getElementById('socialLinksBox');
+      socialLinksBox.innerHTML = '';
+      var hasSocial = false;
+
+      if (appState.lineId) {
+        hasSocial = true;
+        var btn = document.createElement('a');
+        btn.href = appState.lineId.indexOf('http') === 0 ? appState.lineId : 'https://line.me/R/ti/p/~' + appState.lineId;
+        btn.target = '_blank';
+        btn.className = 'flex items-center gap-1 px-3 py-1.5 bg-emerald-500 hover:bg-emerald-600 text-white text-xs font-semibold rounded-full shadow-sm transition-all duration-300';
+        btn.innerHTML = '<svg class="w-3.5 h-3.5 fill-current" viewBox="0 0 24 24"><path d="M24 10.3c0-4.8-5.4-8.8-12-8.8S0 5.5 0 10.3c0 4.3 4.3 7.9 10.1 8.7 1.1.2 1.3.7 1.2 1.8-.1 1-.4 3.7-.4 3.8 0 .5.3.7.8.4.5-.3 6.9-4.1 9.4-7 1.7-2.1 2.9-4.6 2.9-7.1z"/></svg> @' + appState.lineId.replace('@', '');
+        socialLinksBox.appendChild(btn);
+      }
+
+      if (appState.igId) {
+        hasSocial = true;
+        var btn = document.createElement('a');
+        btn.href = 'https://instagram.com/' + appState.igId;
+        btn.target = '_blank';
+        btn.className = 'flex items-center gap-1 px-3 py-1.5 bg-gradient-to-r from-amber-600 to-orange-600 text-white text-xs font-semibold rounded-full shadow-sm transition-all duration-300';
+        btn.innerHTML = '<i data-lucide="instagram" class="w-3.5 h-3.5"></i> ' + appState.igId;
+        socialLinksBox.appendChild(btn);
+      }
+
+      if (appState.fbId) {
+        hasSocial = true;
+        var btn = document.createElement('a');
+        btn.href = appState.fbId.indexOf('http') === 0 ? appState.fbId : 'https://facebook.com/' + appState.fbId;
+        btn.target = '_blank';
+        btn.className = 'flex items-center gap-1 px-3 py-1.5 bg-blue-600 hover:bg-blue-700 text-white text-xs font-semibold rounded-full shadow-sm transition-all duration-300';
+        btn.innerHTML = '<i data-lucide="facebook" class="w-3.5 h-3.5"></i> ' + appState.fbId;
+        socialLinksBox.appendChild(btn);
+      }
+
+      document.getElementById('socialContainer').style.display = hasSocial ? 'flex' : 'none';
+      lucide.createIcons();
+    }
+
+    // ถอดและคำนวณรหัสพร้อมเพย์สำหรับสร้าง QR Code
+    function generatePromptPayQr(targetNumber, amount) {
+      var sanitized = targetNumber.replace(/[^0-9]/g, '');
+      var targetType = sanitized.length === 13 ? 'card' : 'phone';
+      
+      var indicator = '000201';
+      var method = amount > 0 ? '010212' : '010211';
+      var appId = 'A000000677010111';
+      var valueField = '';
+      if (targetType === 'phone') {
+        var mobilePadded = sanitized;
+        if (mobilePadded.indexOf('0') === 0) {
+          mobilePadded = '0066' + mobilePadded.substring(1);
         }
-
-        function addBankAccountField() {
-            bankAccounts.push({
-                bankKey: 'kbank',
-                accNumber: '',
-                accName: ''
-            });
-            renderSetupBankAccounts();
-            triggerMeowSound();
+        while (mobilePadded.length < 13) {
+          mobilePadded = '0' + mobilePadded;
         }
+        valueField = '0113' + mobilePadded;
+      } else {
+        valueField = '0213' + sanitized;
+      }
 
-        function removeBankAccountField(index) {
-            if (bankAccounts.length > 1) {
-                bankAccounts.splice(index, 1);
-                renderSetupBankAccounts();
-                triggerMeowSound();
-            }
-        }
+      var midField = '0016' + appId + valueField;
+      var accountInfo = '29' + (midField.length < 10 ? '0' + midField.length : midField.length) + midField;
+      var currency = '5303764';
+      var country = '5802TH';
+      var amountStr = '';
+      if (amount > 0) {
+        var fixedAmount = parseFloat(amount).toFixed(2);
+        amountStr = '54' + (fixedAmount.length < 10 ? '0' + fixedAmount.length : fixedAmount.length) + fixedAmount;
+      }
 
-        // Render main presentation view bank cards
-        function renderMainBankCards() {
-            var container = document.getElementById('bankCardsContainer');
-            container.innerHTML = '';
+      var beforeCrc = indicator + method + accountInfo + country + currency + amountStr + '6304';
+      var crcValue = computeCrc16(beforeCrc);
+      var ppPayload = beforeCrc + crcValue;
 
-            bankAccounts.forEach(function(acc) {
-                var style = bankStyles[acc.bankKey] || bankStyles['kbank'];
-                var cardDiv = document.createElement('div');
-                cardDiv.className = 'bg-gradient-to-r ' + style.gradient + ' border-2 ' + style.borderColor + ' rounded-2xl p-4 text-left relative overflow-hidden shadow-sm transition-all hover:shadow-md';
-                
-                cardDiv.innerHTML = 
-                    '<div class="flex items-center justify-between mb-2.5">' +
-                    '    <div class="flex items-center gap-2">' +
-                    '        <div class="w-8 h-8 rounded-full ' + style.color + ' flex items-center justify-center text-white font-bold text-[10px] shadow">' +
-                    '            <span>' + style.abbr + '</span>' +
-                    '        </div>' +
-                    '        <div>' +
-                    '            <p class="text-[10px] text-catBrown/60 font-semibold leading-none">บัญชีธนาคาร</p>' +
-                    '            <h3 class="text-xs font-bold text-catBrown">' + style.name + '</h3>' +
-                    '        </div>' +
-                    '    </div>' +
-                    '    <i class="fa-solid fa-paw text-xl text-catOrange/20"></i>' +
-                    '</div>' +
-                    '<div class="mb-2.5 bg-white/70 backdrop-blur-sm p-2 rounded-xl border border-white flex justify-between items-center">' +
-                    '    <div>' +
-                    '        <p class="text-[9px] text-catBrown/60 uppercase font-bold tracking-wider">เลขที่บัญชี / Account No.</p>' +
-                    '        <p class="text-base font-bold text-catBrown tracking-wider font-mono">' + (acc.accNumber || 'ไม่ได้ระบุเลขบัญชี') + '</p>' +
-                    '    </div>' +
-                    '    <button onclick="copyToClipboard(\'' + acc.accNumber + '\')" class="bg-catOrange hover:bg-catOrange/90 text-white p-2 rounded-xl transition-all shadow-md active:scale-95 flex items-center justify-center h-9 w-9">' +
-                    '        <i class="fa-regular fa-copy text-base"></i>' +
-                    '    </button>' +
-                    '</div>' +
-                    '<div class="px-1">' +
-                    '    <p class="text-[9px] text-catBrown/60 uppercase font-bold tracking-wider leading-none">ชื่อบัญชี / Account Name</p>' +
-                    '    <p class="text-xs font-bold text-catBrown mt-0.5">' + (acc.accName || 'ไม่ได้ระบุชื่อบัญชี') + '</p>' +
-                    '</div>';
+      var qrUrl = 'https://api.qrserver.com/v1/create-qr-code/?size=250x250&data=' + encodeURIComponent(ppPayload);
+      document.getElementById('qrImage').src = qrUrl;
 
-                container.appendChild(cardDiv);
-            });
-        }
+      var amountText = 'สแกนเพื่อจ่าย แล้วกดเสร็จสิ้นเหมียว!';
+      if (amount > 0) {
+        amountText = 'กรุณาสแกนเพื่อโอนเงินจำนวน ' + amount + ' บาท';
+      }
+      document.getElementById('displayAmountText').textContent = amountText;
+    }
 
-        // QR Lightbox Zoom Modal handlers
-        function openQrZoom() {
-            var zoomModal = document.getElementById('qrZoomModal');
-            var zoomCard = document.getElementById('zoomCard');
-            var mainQr = document.getElementById('qrImage');
-            var zoomQr = document.getElementById('qrZoomImage');
-            var zoomShopName = document.getElementById('zoomShopName');
-            var zoomAmountText = document.getElementById('zoomAmountText');
-            
-            zoomQr.src = mainQr.src;
-            zoomShopName.innerText = document.getElementById('shopNameText').innerText;
-            
-            var amtVal = parseFloat(document.getElementById('inputAmount').value) || 0;
-            if (amtVal > 0) {
-                zoomAmountText.innerText = 'จำนวนเงินโอน: ' + amtVal.toLocaleString('th-TH', {minimumFractionDigits: 2}) + ' บาท 🐾';
-            } else {
-                zoomAmountText.innerText = 'โปรดระบุจำนวนเงินเมื่อสแกน';
-            }
+    function computeCrc16(data) {
+      var crc = 0xFFFF;
+      for (var i = 0; i < data.length; i++) {
+        var x = ((crc >> 8) ^ data.charCodeAt(i)) & 0xFF;
+        x ^= x >> 4;
+        crc = ((crc << 8) ^ (x << 12) ^ (x << 5) ^ x) & 0xFFFF;
+      }
+      var hex = crc.toString(16).toUpperCase();
+      while (hex.length < 4) hex = '0' + hex;
+      return hex;
+    }
 
-            triggerMeowSound();
+    function copyToClipboard(text) {
+      var numOnly = text.replace(/[^0-9]/g, '');
+      var tempInput = document.createElement('input');
+      tempInput.value = numOnly;
+      document.body.appendChild(tempInput);
+      tempInput.select();
+      document.execCommand('copy');
+      document.body.removeChild(tempInput);
 
-            zoomModal.classList.remove('opacity-0', 'pointer-events-none');
-            setTimeout(function() {
-                zoomCard.classList.remove('scale-95');
-                zoomCard.classList.add('scale-100');
-            }, 10);
-        }
+      playCatMeowSound();
+      showToast('คัดลอก ' + numOnly + ' ไปยังแอปธนาคารสำเร็จเหมียว! 🐾');
+    }
 
-        function closeQrZoom() {
-            var zoomModal = document.getElementById('qrZoomModal');
-            var zoomCard = document.getElementById('zoomCard');
-            
-            zoomCard.classList.remove('scale-100');
-            zoomCard.classList.add('scale-95');
-            
-            setTimeout(function() {
-                zoomModal.classList.add('opacity-0', 'pointer-events-none');
-            }, 150);
-        }
+    function showToast(msg) {
+      var toast = document.getElementById('toastAlert');
+      document.getElementById('toastText').textContent = msg;
+      toast.style.opacity = '1';
+      toast.style.transform = 'translate(-50%, -20px)';
+      toast.className = 'fixed bottom-10 left-1/2 -translate-x-1/2 z-50 bg-amber-900/90 backdrop-blur-md text-white text-xs px-5 py-3 rounded-full shadow-lg border border-amber-800 flex items-center gap-2 toast-animate';
 
-        var canvas = document.getElementById('canvasBg');
-        var ctx = canvas.getContext('2d');
-        var particles = [];
+      setTimeout(function() {
+        toast.style.opacity = '0';
+        toast.style.transform = 'translate(-50%, 100%)';
+      }, 3000);
+    }
 
-        function resizeCanvas() {
-            canvas.width = window.innerWidth;
-            canvas.height = window.innerHeight;
-        }
-        window.addEventListener('resize', resizeCanvas);
-        resizeCanvas();
+    // แตะโลโก้ 3 ครั้งรวดเร็วเพื่อเปิดเมนูตั้งค่า
+    function handleLogoClick() {
+      logoClickCount++;
+      clearTimeout(logoClickTimeout);
+      
+      if (logoClickCount >= 3) {
+        logoClickCount = 0;
+        openConfigModal();
+      } else {
+        logoClickTimeout = setTimeout(function() {
+          logoClickCount = 0;
+        }, 1000);
+      }
+    }
 
-        function drawPaw(x, y, size, opacity) {
-            ctx.fillStyle = 'rgba(245, 194, 132, ' + opacity + ')';
-            ctx.beginPath();
-            ctx.arc(x, y + size * 0.2, size * 0.5, 0, Math.PI * 2);
-            ctx.fill();
-            ctx.beginPath();
-            ctx.arc(x - size * 0.4, y - size * 0.1, size * 0.22, 0, Math.PI * 2);
-            ctx.arc(x - size * 0.1, y - size * 0.35, size * 0.22, 0, Math.PI * 2);
-            ctx.arc(x + size * 0.2, y - size * 0.35, size * 0.22, 0, Math.PI * 2);
-            ctx.arc(x + size * 0.5, y - size * 0.1, size * 0.22, 0, Math.PI * 2);
-            ctx.fill();
-        }
+    // สร้างฟอร์มการตั้งค่าระบบ
+    function openConfigModal() {
+      document.getElementById('inputShopName').value = appState.shopName;
+      document.getElementById('inputShopTagline').value = appState.shopTagline;
+      document.getElementById('inputLine').value = appState.lineId;
+      document.getElementById('inputIG').value = appState.igId;
+      document.getElementById('inputFB').value = appState.fbId;
 
-        function drawFishBone(x, y, size, angle, opacity) {
-            ctx.strokeStyle = 'rgba(90, 62, 45, ' + opacity + ')';
-            ctx.lineWidth = size * 0.1;
-            ctx.lineCap = 'round';
-            
-            ctx.save();
-            ctx.translate(x, y);
-            ctx.rotate(angle);
-
-            ctx.beginPath();
-            ctx.moveTo(-size/2, 0);
-            ctx.lineTo(size/2, 0);
-            ctx.stroke();
-
-            ctx.fillStyle = 'rgba(90, 62, 45, ' + opacity + ')';
-            ctx.beginPath();
-            ctx.moveTo(size/2, 0);
-            ctx.lineTo(size/2 - size*0.3, -size*0.2);
-            ctx.lineTo(size/2 - size*0.3, size*0.2);
-            ctx.closePath();
-            ctx.fill();
-
-            ctx.beginPath();
-            for (var i = -size*0.3; i < size*0.3; i += size*0.25) {
-                ctx.moveTo(i, -size*0.25);
-                ctx.lineTo(i, size*0.25);
-            }
-            ctx.stroke();
-
-            ctx.beginPath();
-            ctx.moveTo(-size/2, 0);
-            ctx.lineTo(-size/2 - size*0.15, -size*0.15);
-            ctx.lineTo(-size/2 - size*0.15, size*0.15);
-            ctx.closePath();
-            ctx.fill();
-
-            ctx.restore();
-        }
-
-        function createParticles() {
-            var count = 18;
-            particles = [];
-            for (var i = 0; i < count; i++) {
-                particles.push({
-                    x: Math.random() * canvas.width,
-                    y: Math.random() * canvas.height,
-                    size: Math.random() * 20 + 15,
-                    speedY: Math.random() * 0.4 + 0.1,
-                    speedX: (Math.random() - 0.5) * 0.2,
-                    opacity: Math.random() * 0.3 + 0.15,
-                    angle: Math.random() * Math.PI * 2,
-                    spin: (Math.random() - 0.5) * 0.01,
-                    type: Math.floor(Math.random() * 3)
-                });
-            }
-        }
-
-        function animateBg() {
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
-            particles.forEach(function(p) {
-                p.y -= p.speedY;
-                p.x += p.speedX;
-                p.angle += p.spin;
-
-                if (p.y < -p.size * 2) {
-                    p.y = canvas.height + p.size * 2;
-                    p.x = Math.random() * canvas.width;
-                }
-                if (p.x < -p.size * 2) p.x = canvas.width + p.size * 2;
-                if (p.x > canvas.width + p.size * 2) p.x = -p.size * 2;
-
-                if (p.type === 0) {
-                    drawPaw(p.x, p.y, p.size, p.opacity);
-                } else if (p.type === 1) {
-                    drawFishBone(p.x, p.y, p.size, p.angle, p.opacity);
-                } else {
-                    ctx.beginPath();
-                    ctx.arc(p.x, p.y, p.size * 0.4, 0, Math.PI * 2);
-                    ctx.fillStyle = 'rgba(252, 216, 114, ' + (p.opacity * 0.7) + ')';
-                    ctx.fill();
-                }
-            });
-            requestAnimationFrame(animateBg);
-        }
-
-        var selectedLogoUrl = 'https://placehold.co/150x150/FECA57/4A3E3D?text=🐱';
-        var logoClickCount = 0;
-        var logoClickTimeout;
-
-        // Hidden setup modal trigger on clicking Shop Profile logo 3 times
-        function handleLogoClick() {
-            logoClickCount++;
-            clearTimeout(logoClickTimeout);
-            
-            if (logoClickCount >= 3) {
-                toggleSetupModal();
-                logoClickCount = 0;
-                showToast('ยินดีต้อนรับเข้าสู่โหมดตั้งค่าลับน้าเหมียว! 🐾');
-            } else {
-                logoClickTimeout = setTimeout(function() {
-                    logoClickCount = 0;
-                }, 1000);
-            }
-        }
-
-        function selectLogo(url) {
-            selectedLogoUrl = url;
-            var buttons = document.querySelectorAll('#setupModal button img');
-            buttons.forEach(function(btnImg) {
-                if (btnImg.getAttribute('src') === url) {
-                    btnImg.parentElement.classList.add('border-catYellow');
-                    btnImg.parentElement.classList.remove('border-transparent');
-                } else {
-                    btnImg.parentElement.classList.remove('border-transparent');
-                    btnImg.parentElement.classList.add('border-transparent');
-                }
-            });
-        }
-
-        function toggleSetupModal() {
-            var modal = document.getElementById('setupModal');
-            if (modal.classList.contains('opacity-0')) {
-                renderSetupBankAccounts();
-                modal.classList.remove('opacity-0', 'pointer-events-none');
-                triggerMeowSound();
-            } else {
-                modal.classList.add('opacity-0', 'pointer-events-none');
-            }
-        }
-
-        function applySettings() {
-            var shopName = document.getElementById('inputShopName').value;
-            var shopTagline = document.getElementById('inputShopTagline').value;
-            var promptPayID = document.getElementById('inputPromptPayID').value;
-            var amountVal = parseFloat(document.getElementById('inputAmount').value) || 0;
-
-            var lineVal = document.getElementById('inputLine').value.trim();
-            var igVal = document.getElementById('inputIG').value.trim();
-            var fbVal = document.getElementById('inputFB').value.trim();
-
-            document.getElementById('shopNameText').innerText = shopName;
-            document.getElementById('shopTaglineText').innerText = shopTagline;
-            document.getElementById('shopLogo').src = selectedLogoUrl;
-
-            renderMainBankCards();
-
-            var contactSection = document.getElementById('contactSection');
-            var linkLine = document.getElementById('linkLine');
-            var linkIG = document.getElementById('linkIG');
-            var linkFB = document.getElementById('linkFB');
-
-            var visibleContactsCount = 0;
-
-            if (lineVal) {
-                linkLine.classList.remove('hidden');
-                document.getElementById('labelLine').innerText = lineVal;
-                linkLine.href = 'https://line.me/R/ti/p/~' + lineVal.replace('@', '');
-                visibleContactsCount++;
-            } else {
-                linkLine.classList.add('hidden');
-            }
-
-            if (igVal) {
-                linkIG.classList.remove('hidden');
-                document.getElementById('labelIG').innerText = igVal;
-                linkIG.href = 'https://instagram.com/' + igVal;
-                visibleContactsCount++;
-            } else {
-                linkIG.classList.add('hidden');
-            }
-
-            if (fbVal) {
-                linkFB.classList.remove('hidden');
-                document.getElementById('labelFB').innerText = fbVal;
-                linkFB.href = 'https://facebook.com/' + fbVal;
-                visibleContactsCount++;
-            } else {
-                linkFB.classList.add('hidden');
-            }
-
-            if (visibleContactsCount > 0) {
-                contactSection.classList.remove('hidden');
-            } else {
-                contactSection.classList.add('hidden');
-            }
-
-            var qrUrl = 'https://promptpay.io/' + promptPayID.replace(/-/g, '');
-            if (amountVal > 0) {
-                qrUrl += '/' + amountVal + '.png';
-            } else {
-                qrUrl += '.png';
-            }
-
-            document.getElementById('qrImage').src = qrUrl;
-
-            toggleSetupModal();
-            showToast('อัปเดตข้อมูลและระบบเรียบร้อยเหมียว! 🐾');
-            triggerPurrSound();
-        }
-
-        function copyToClipboard(accNum) {
-            if (!accNum) {
-                showToast('ไม่พบเลขบัญชีที่จะคัดลอก!');
-                return;
-            }
-            var cleanNum = accNum.replace(/-/g, '');
-            var tempInput = document.createElement('input');
-            tempInput.value = cleanNum;
-            document.body.appendChild(tempInput);
-            tempInput.select();
-            tempInput.setSelectionRange(0, 99999);
-            
-            try {
-                document.execCommand('copy');
-                showToast('คัดลอกเลขบัญชี ' + accNum + ' แล้ว เหมียว!');
-                triggerMeowSound();
-            } catch (err) {
-                showToast('ไม่สามารถคัดลอกอัตโนมัติได้ กรุณาคัดลอกด้วยตนเอง');
-            }
-            
-            document.body.removeChild(tempInput);
-        }
-
-        function showToast(text) {
-            var toast = document.getElementById('toast');
-            var toastText = document.getElementById('toastText');
-            toastText.innerText = text;
-
-            toast.classList.remove('opacity-0', 'translate-y-[-100px]');
-            toast.classList.add('opacity-100', 'translate-y-0');
-
-            setTimeout(function() {
-                toast.classList.remove('opacity-100', 'translate-y-0');
-                toast.classList.add('opacity-0', 'translate-y-[-100px]');
-            }, 3000);
-        }
-
-        window.onload = function() {
-            createParticles();
-            animateBg();
-            renderMainBankCards();
-            
-            setInterval(function() {
-                var eyes = document.getElementById('catEyes');
-                if (eyes) {
-                    eyes.style.transform = 'scaleY(0.1)';
-                    eyes.style.transformOrigin = 'center 75px';
-                    setTimeout(function() {
-                        eyes.style.transform = 'scaleY(1)';
-                    }, 150);
-                }
-            }, 5000);
+      var avatarSelector = document.getElementById('avatarSelector');
+      avatarSelector.innerHTML = '';
+      LOGO_PRESETS.forEach(function(preset) {
+        var card = document.createElement('div');
+        card.className = 'border-2 rounded-xl p-1 flex items-center justify-center cursor-pointer transition-all hover:scale-105 ' + (appState.avatar === preset ? 'border-amber-500 bg-amber-50' : 'border-slate-200');
+        card.innerHTML = SVGS[preset];
+        card.onclick = function() {
+          appState.avatar = preset;
+          openConfigModal();
         };
-    </script>
+        avatarSelector.appendChild(card);
+      });
+
+      var container = document.getElementById('accountsInputsContainer');
+      container.innerHTML = '';
+
+      appState.accounts.forEach(function(acc, idx) {
+        var row = document.createElement('div');
+        row.className = 'p-4 border border-slate-200 rounded-2xl bg-slate-50 relative space-y-2';
+
+        if (appState.accounts.length > 1) {
+          var deleteBtn = document.createElement('button');
+          deleteBtn.className = 'absolute top-2 right-2 text-red-500 hover:bg-red-50 p-1.5 rounded-full transition-all';
+          deleteBtn.innerHTML = '<i data-lucide="trash-2" class="w-4 h-4"></i>';
+          deleteBtn.onclick = function() {
+            appState.accounts.splice(idx, 1);
+            openConfigModal();
+          };
+          row.appendChild(deleteBtn);
+        }
+
+        var bankSelectBlock = document.createElement('div');
+        bankSelectBlock.innerHTML = '<label class="block text-xs font-semibold text-slate-600 mb-1">เลือกธนาคาร</label>';
+        var select = document.createElement('select');
+        select.className = 'w-full border border-slate-200 rounded-lg px-2.5 py-1.5 text-xs bg-white focus:outline-none';
+        
+        Object.keys(BANKS_DB).forEach(function(key) {
+          var option = document.createElement('option');
+          option.value = key;
+          option.textContent = BANKS_DB[key].name;
+          if (acc.bank === key) option.selected = true;
+          select.appendChild(option);
+        });
+        select.onchange = function(e) {
+          acc.bank = e.target.value;
+        };
+        bankSelectBlock.appendChild(select);
+
+        var numBlock = document.createElement('div');
+        numBlock.innerHTML = '<label class="block text-xs font-semibold text-slate-600 mb-1">เลขบัญชี</label>';
+        var numInput = document.createElement('input');
+        numInput.type = 'text';
+        numInput.value = acc.number;
+        numInput.className = 'w-full border border-slate-200 rounded-lg px-2.5 py-1.5 text-xs focus:outline-none bg-white';
+        numInput.oninput = function(e) {
+          acc.number = e.target.value;
+        };
+        numBlock.appendChild(numInput);
+
+        var nameBlock = document.createElement('div');
+        nameBlock.innerHTML = '<label class="block text-xs font-semibold text-slate-600 mb-1">ชื่อเจ้าของบัญชี</label>';
+        var nameInput = document.createElement('input');
+        nameInput.type = 'text';
+        nameInput.value = acc.name;
+        nameInput.className = 'w-full border border-slate-200 rounded-lg px-2.5 py-1.5 text-xs focus:outline-none bg-white';
+        nameInput.oninput = function(e) {
+          acc.name = e.target.value;
+        };
+        nameBlock.appendChild(nameInput);
+
+        var ppBlock = document.createElement('div');
+        ppBlock.innerHTML = '<label class="block text-xs font-semibold text-slate-600 mb-1">เบอร์พร้อมเพย์ (สำหรับคำนวณสร้าง QR Code)</label>';
+        var ppInput = document.createElement('input');
+        ppInput.type = 'text';
+        ppInput.placeholder = 'เช่น 0812345678 หรือ เลขบัตรปชช 13 หลัก';
+        ppInput.value = acc.ppNumber || '';
+        ppInput.className = 'w-full border border-slate-200 rounded-lg px-2.5 py-1.5 text-xs focus:outline-none bg-white';
+        ppInput.oninput = function(e) {
+          acc.ppNumber = e.target.value;
+        };
+        ppBlock.appendChild(ppInput);
+
+        var amountBlock = document.createElement('div');
+        amountBlock.innerHTML = '<label class="block text-xs font-semibold text-slate-600 mb-1">ฟิกซ์จำนวนเงิน (บาท) *ระบุเป็น 0 เพื่อให้กรอกเอง</label>';
+        var amtInput = document.createElement('input');
+        amtInput.type = 'number';
+        amtInput.value = acc.amount || 0;
+        amtInput.className = 'w-full border border-slate-200 rounded-lg px-2.5 py-1.5 text-xs focus:outline-none bg-white';
+        amtInput.oninput = function(e) {
+          acc.amount = parseFloat(e.target.value) || 0;
+        };
+        amountBlock.appendChild(amtInput);
+
+        row.appendChild(bankSelectBlock);
+        row.appendChild(numBlock);
+        row.appendChild(nameBlock);
+        row.appendChild(ppBlock);
+        row.appendChild(amountBlock);
+        container.appendChild(row);
+      });
+
+      lucide.createIcons();
+
+      var modal = document.getElementById('configModal');
+      modal.style.opacity = '1';
+      modal.style.pointerEvents = 'auto';
+      modal.children[0].style.transform = 'scale(1)';
+    }
+
+    function addNewAccountRow() {
+      appState.accounts.push({
+        bank: 'promptpay',
+        number: '',
+        name: '',
+        ppNumber: '',
+        amount: 0
+      });
+      openConfigModal();
+    }
+
+    function closeConfigModal() {
+      var modal = document.getElementById('configModal');
+      modal.style.opacity = '0';
+      modal.style.pointerEvents = 'none';
+      modal.children[0].style.transform = 'scale(0.95)';
+    }
+
+    function saveConfig() {
+      appState.shopName = document.getElementById('inputShopName').value;
+      appState.shopTagline = document.getElementById('inputShopTagline').value;
+      appState.lineId = document.getElementById('inputLine').value;
+      appState.igId = document.getElementById('inputIG').value;
+      appState.fbId = document.getElementById('inputFB').value;
+
+      saveState();
+      renderApp();
+      closeConfigModal();
+      showToast('บันทึกข้อมูลและอัปเดตหน้าร้านสำเร็จแล้วเหมียว! 🐾');
+    }
+
+    function openQrModal() {
+      var modal = document.getElementById('qrModal');
+      document.getElementById('modalQrImage').src = document.getElementById('qrImage').src;
+      document.getElementById('modalShopName').textContent = appState.shopName;
+      document.getElementById('modalAmountText').textContent = document.getElementById('displayAmountText').textContent;
+
+      modal.style.opacity = '1';
+      modal.style.pointerEvents = 'auto';
+      modal.children[0].style.transform = 'scale(1)';
+    }
+
+    function closeQrModal() {
+      var modal = document.getElementById('qrModal');
+      modal.style.opacity = '0';
+      modal.style.pointerEvents = 'none';
+      modal.children[0].style.transform = 'scale(0.95)';
+    }
+
+    // ==================== พื้นหลังอนิเมชันลอยนุ่มนวล (Canvas) ====================
+    var canvas, ctx;
+    var assets = [];
+
+    function initBackgroundCanvas() {
+      canvas = document.getElementById('bgCanvas');
+      ctx = canvas.getContext('2d');
+      resizeCanvas();
+      
+      for (var i = 0; i < 12; i++) {
+        assets.push({
+          x: Math.random() * canvas.width,
+          y: Math.random() * canvas.height,
+          type: i % 3 === 0 ? 'paw' : (i % 3 === 1 ? 'fish' : 'cat'),
+          size: Math.random() * 20 + 20,
+          speed: Math.random() * 0.4 + 0.2,
+          angle: Math.random() * Math.PI * 2,
+          rotSpeed: Math.random() * 0.01 - 0.005,
+          opacity: Math.random() * 0.15 + 0.05
+        });
+      }
+
+      window.addEventListener('resize', resizeCanvas);
+      animateBg();
+    }
+
+    function resizeCanvas() {
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+    }
+
+    function animateBg() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      
+      assets.forEach(function(asset) {
+        ctx.save();
+        ctx.translate(asset.x, asset.y);
+        ctx.rotate(asset.angle);
+        ctx.globalAlpha = asset.opacity;
+        ctx.fillStyle = '#E2722B';
+        
+        if (asset.type === 'paw') {
+          ctx.beginPath();
+          ctx.ellipse(0, 5, asset.size * 0.4, asset.size * 0.3, 0, 0, Math.PI * 2);
+          ctx.fill();
+          
+          ctx.beginPath();
+          ctx.arc(-asset.size * 0.3, -asset.size * 0.1, asset.size * 0.15, 0, Math.PI * 2);
+          ctx.fill();
+          ctx.beginPath();
+          ctx.arc(-asset.size * 0.1, -asset.size * 0.3, asset.size * 0.16, 0, Math.PI * 2);
+          ctx.fill();
+          ctx.beginPath();
+          ctx.arc(asset.size * 0.1, -asset.size * 0.3, asset.size * 0.16, 0, Math.PI * 2);
+          ctx.fill();
+          ctx.beginPath();
+          ctx.arc(asset.size * 0.3, -asset.size * 0.1, asset.size * 0.15, 0, Math.PI * 2);
+          ctx.fill();
+        } 
+        else if (asset.type === 'fish') {
+          ctx.beginPath();
+          ctx.moveTo(-asset.size * 0.5, 0);
+          ctx.lineTo(asset.size * 0.4, 0);
+          ctx.lineWidth = 3;
+          ctx.strokeStyle = '#E2722B';
+          ctx.stroke();
+
+          ctx.beginPath();
+          ctx.moveTo(asset.size * 0.4, -asset.size * 0.15);
+          ctx.lineTo(asset.size * 0.6, 0);
+          ctx.lineTo(asset.size * 0.4, asset.size * 0.15);
+          ctx.closePath();
+          ctx.fill();
+
+          for (var j = -2; j <= 2; j++) {
+            if (j === 0) continue;
+            var pos = j * (asset.size * 0.12);
+            ctx.beginPath();
+            ctx.moveTo(pos, -asset.size * 0.2);
+            ctx.lineTo(pos, asset.size * 0.2);
+            ctx.lineWidth = 2;
+            ctx.stroke();
+          }
+        } 
+        else {
+          ctx.beginPath();
+          ctx.arc(0, 0, asset.size * 0.4, 0, Math.PI * 2);
+          ctx.fill();
+
+          ctx.beginPath();
+          ctx.moveTo(-asset.size * 0.35, -asset.size * 0.15);
+          ctx.lineTo(-asset.size * 0.35, -asset.size * 0.45);
+          ctx.lineTo(-asset.size * 0.1, -asset.size * 0.3);
+          ctx.closePath();
+          ctx.fill();
+
+          ctx.beginPath();
+          ctx.moveTo(asset.size * 0.35, -asset.size * 0.15);
+          ctx.lineTo(asset.size * 0.35, -asset.size * 0.45);
+          ctx.lineTo(asset.size * 0.1, -asset.size * 0.3);
+          ctx.closePath();
+          ctx.fill();
+        }
+        
+        ctx.restore();
+        
+        asset.y -= asset.speed;
+        asset.angle += asset.rotSpeed;
+        
+        if (asset.y < -asset.size * 2) {
+          asset.y = canvas.height + asset.size * 2;
+          asset.x = Math.random() * canvas.width;
+        }
+      });
+      
+      requestAnimationFrame(animateBg);
+    }
+  </script>
 </body>
 </html>
